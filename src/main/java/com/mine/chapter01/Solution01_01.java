@@ -2,9 +2,7 @@ package com.mine.chapter01;
 
 import com.mine.util.RandomUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author CaoY
@@ -17,6 +15,8 @@ import java.util.List;
  * 目前所知的就是两个思路：
  * 1. 对整个数组进行降序排序，然后再取第 k - 1 个位置上的元素；
  * 2. 对前 k 个元素进行降序排序，之后再遍历剩下的元素，依次将其加入到已排序的数组中，最后取已排序部分的最后一个元素即可
+ *  注：这里使用了迭代器(listIterator)来删除和添加元素，注意其使用，next() 和 previous() 有移动的意思，
+ *  甚至会体现在 debug 中，从而影响代码运行，这点注意。
  * 3. todo 还有更好的解法，待补充
  *
  * 注：
@@ -28,18 +28,23 @@ public class Solution01_01 {
     public static void main(String[] args) {
 //        int[] arr = new int[]{3, 2, 8, 12, 6, 1, 5};
 //        int[] arr = new int[]{3, 2, 8, 12, 6, 1, 5, 30, 50 ,23, 76, 55, -1, -4, 30, 62};
-        int[] arr = new int[]{98, 83, 80, 68, 59, 53, 45, 40, 34, 29};
+//        int[] arr = new int[]{98, 83, 80, 68, 59, 53, 45, 40, 34, 29};
+//        int[] arr = new int[]{30, 25, 60, 24, 19, 61}; // 替换已排序部分的最大值
+        int[] arr = new int[]{30, 25, 60, 24, 19, 26}; // 替换已排序部分的最后一个数
+        // 用来显示排序后效果的数组
+        int[] newArr = Arrays.copyOf(arr, arr.length);
         System.out.println("原数组：" + Arrays.toString(arr));
-        bubbleSort(arr, 0, arr.length);
-        System.out.println("整体排序后：" + Arrays.toString(arr));
+        bubbleSort(newArr, 0, newArr.length);
+        System.out.println("整体排序后：" + Arrays.toString(newArr));
         int k = arr.length / 2;
         System.out.println("第" + k + "个最大的值：" + func(arr, k));
         System.out.println("================================================");
 
         int[] arr2 = RandomUtil.randomIntArrays(-100, 987, 30);
         System.out.println("随机生成的数组：" + Arrays.toString(arr2));
-        bubbleSort(arr2, 0, arr2.length);
-        System.out.println("整体排序后：" + Arrays.toString(arr2));
+        int[] newArr2 = Arrays.copyOf(arr2, arr2.length);
+        bubbleSort(newArr2, 0, newArr2.length);
+        System.out.println("整体排序后：" + Arrays.toString(newArr2));
         k = arr2.length / 2;
         System.out.println("第" + k + "个最大的值：" + func(arr2, k));
     }
@@ -49,27 +54,33 @@ public class Solution01_01 {
     private static int func(int[] arr, int k) {
         int N = arr.length;
         bubbleSort(arr, 0, k);
-        List<Integer> list = new ArrayList<>();
+        List<Integer> list = new LinkedList<>();
         for (int i = 0; i < k; i++) {
             list.add(arr[i]);
         }
 
-        // 这里的数据移动非常拉胯，很费时间，可我还是没有想到什么好办法，只能这样处理
+        // 这里的若用数组的数据移动非常拉胯，很费时间，所以我选择使用 LinkedList
+        // 配合迭代器来工作，理论上应该大大提高了运行效率
         for (int i = k; i < N; i++) {
-            int index = k - 1;
-            while (index >= 0 && arr[index] < arr[i]) {
-                index--;
+            // 使用迭代器提高效率
+            ListIterator<Integer> iter = list.listIterator(list.size());
+            boolean isDeleted = false;
+            while (iter.hasPrevious() && iter.previous() < arr[i]) {
+                // 发现比最后一个元素大时马上删除最后一个元素，此后不再删除元素
+                if (!isDeleted) {
+                    iter.remove();
+                    isDeleted = true;
+                }
             }
-            if (index == k - 1) {
-                continue;
+            if (iter.hasPrevious()) {
+                iter.next();
             }
-            for (int j = k - 1; j > index + 1; j--) {
-                arr[j] = arr[j - 1];
+            if (isDeleted) {
+                iter.add(arr[i]);
             }
-            arr[index + 1] = arr[i];
         }
 
-        return arr[k - 1];
+        return list.get(list.size() - 1);
     }
 
     // 采用一种简单的排序：冒泡排序，当然也可以用别的排序，
