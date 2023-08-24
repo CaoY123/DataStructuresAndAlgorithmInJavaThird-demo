@@ -1,8 +1,6 @@
 package com.mine.chapter03;
 
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * @author CaoY
@@ -174,6 +172,25 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
         return p;
     }
 
+    /**
+     * 集合中是否包含指定元素，若包含，返回 true，反之，则返回 false。
+     * @param x 指定的判断是否包含的值，可以为 null
+     * @return  判断是否包含的结果
+     * 注：练习 3.3 的回答
+     */
+    public boolean contains(AnyType x) {
+        Node node = beginMarker.next;
+        while (node != endMarker) {
+            if (Objects.equals(x, node.data)) {
+                // 包含对当 x 是 null 值的处理，因为 JDK 中的 LinkedList 可以存放 null 值，
+                // 并且当其含有 null 值时，调用 contains() 会返回 true
+                return true;
+            }
+            node = node.next;
+        }
+        return false;
+    }
+
     @Override
     public Iterator<AnyType> iterator() {
         return new LinkedListIterator();
@@ -294,5 +311,10 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
 
         list.clear();
         System.out.println("list 是否为空：" + (list.isEmpty() ? "是" : "否"));
+
+        List<Integer> list1 = new LinkedList<>();
+        list1.add(1);
+        System.out.println(list1);
+        System.out.println(list1.contains(null));
     }
 }
