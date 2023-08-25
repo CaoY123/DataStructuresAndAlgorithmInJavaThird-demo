@@ -31,46 +31,54 @@ import java.util.*;
  *  迭代器没有下一个元素（走到了末尾）并且下一次还需要它继续向前迭代（flag 为 0 和 1 时均需要 iter1 往前走），
  *  那么就终止循环，而要继续循环则取反并且同时也要按照同样的道理检验 iter2。这个由 Solution03_05 启发得到，
  *  不这么设置条件在此种结构下会漏掉表边缘相同的元素。
+ *  5. 照抄一下答案的解法，写得更加优雅巧妙，循环判断条件更加简单，其用临时变量作为循环条件的参数，能
+ *  避免由于迭代器的 next 带来的动态干扰（因为会涉及到早就移动到了最后一个位置）
  */
 public class Solution03_04 {
 
     public static void main(String[] args) {
         List<Integer> L1 = Arrays.asList(1, 3, 4, 5, 7, 9);
         List<Integer> L2 = Arrays.asList(2, 4, 6, 7, 8);
-        List<Integer> res = intersection(L1, L2);
+//        List<Integer> res = intersection(L1, L2);
+        List<Integer> res = intersection2(L1, L2);
         System.out.println("L1 为：" + L1);
         System.out.println("L2 为：" + L2);
         System.out.println("L1 和 L2 交集为：" + res);
         System.out.println("**************************************");
         L1 = Arrays.asList(1, 3, 5, 7, 9);
         L2 = Arrays.asList(2, 4, 6, 8, 10);
-        res = intersection(L1, L2);
+//        res = intersection(L1, L2);
+        res = intersection2(L1, L2);
         System.out.println("L1 为：" + L1);
         System.out.println("L2 为：" + L2);
         System.out.println("L1 和 L2 交集为：" + res);
         System.out.println("**************************************");
         L1 = Arrays.asList(6);
         L2 = Arrays.asList(6, 9);
-        res = intersection(L1, L2);
+//        res = intersection(L1, L2);
+        res = intersection2(L1, L2);
         System.out.println("L1 为：" + L1);
         System.out.println("L2 为：" + L2);
         System.out.println("L1 和 L2 交集为：" + res);
         System.out.println("**************************************");
         L1 = null;
         L2 = Arrays.asList(2);
-        res = intersection(L1, L2);
+//        res = intersection(L1, L2);
+        res = intersection2(L1, L2);
         System.out.println("L1 为：" + L1);
         System.out.println("L2 为：" + L2);
         System.out.println("L1 和 L2 交集为：" + res);
         System.out.println("**************************************");
         L1 = Arrays.asList(1, 3, 5, 7, 9, 10);
         L2 = Arrays.asList(2, 4, 6, 8, 10);
-        res = intersection(L1, L2);
+//        res = intersection(L1, L2);
+        res = intersection2(L1, L2);
         System.out.println("L1 为：" + L1);
         System.out.println("L2 为：" + L2);
         System.out.println("L1 和 L2 交集为：" + res);
     }
 
+    // L1 和 L2 为已经从小到大排序过的表
     private static <AnyType extends Comparable<? super AnyType>>
     List<AnyType> intersection(List<AnyType> L1, List<AnyType> L2) {
         // L1、L2的非空校验
@@ -111,6 +119,41 @@ public class Solution03_04 {
                 }
             }
         }
+        return result;
+    }
+
+    // 使用答案的写法（参数条件与 intersection 方法相同）
+    private static <AnyType extends Comparable<? super AnyType>>
+    List<AnyType> intersection2(List<AnyType> L1, List<AnyType> L2) {
+        // L1 和 L2 为空的处理
+        if (L1 == null || L1.size() == 0 || L2 == null || L2.size() == 0) {
+            return new ArrayList<>();
+        }
+
+        List<AnyType> result = new ArrayList<>();
+        Iterator<AnyType> iter1 = L1.iterator();
+        Iterator<AnyType> iter2 = L2.iterator();
+
+        AnyType val1 = null;
+        AnyType val2 = null;
+        if (iter1.hasNext() && iter2.hasNext()) {
+            val1 = iter1.next();
+            val2 = iter2.next();
+        }
+
+        while (val1 != null && val2 != null) {
+            int compareRes = val1.compareTo(val2);
+            if (compareRes == 0) {
+                result.add(val1);
+                val1 = iter1.hasNext() ? iter1.next() : null;
+                val2 = iter2.hasNext() ? iter2.next() : null;
+            } else if (compareRes > 0) {
+                val2 = iter2.hasNext() ? iter2.next() : null;
+            } else {
+                val1 = iter1.hasNext() ? iter1.next() : null;
+            }
+        }
+
         return result;
     }
 }
