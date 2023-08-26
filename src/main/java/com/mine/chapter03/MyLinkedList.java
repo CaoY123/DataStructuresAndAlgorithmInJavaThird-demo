@@ -91,6 +91,29 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
     }
 
     /**
+     * 删除表中的存在于指定可迭代集合中的元素（回答练习 3.10）
+     * @param items 指定的可迭代集合
+     */
+    public void removeAll(Iterable<? extends AnyType> items) {
+        Iterator<? extends AnyType> iter = items.iterator();
+
+        while (iter.hasNext()) {
+            AnyType val = iter.next();
+            Iterator<AnyType> thisIter = iterator();
+            AnyType thisVal = null;
+            if (thisIter.hasNext()) {
+                thisVal = thisIter.next();
+            }
+            while (thisIter.hasNext() && !Objects.equals(val, thisVal)) {
+                thisVal = thisIter.next();
+            }
+            if (Objects.equals(val, thisVal)) {
+                thisIter.remove();
+            }
+        }
+    }
+
+    /**
      * 删除指定下标的结点，返回被删除的结点的元素值
      * @param index 指定的下标，从 0 开始
      * @return      被删除结点的元素值

@@ -87,6 +87,17 @@ public class MyArrayList<AnyType> implements Iterable<AnyType> {
     }
 
     /**
+     * 将指定可迭代集合的所有元素添加到 MyArrayList 集合中
+     * @param items 可以迭代的集合
+     */
+    public void addAll(Iterable<? extends AnyType> items) {
+        Iterator<? extends AnyType> iter = items.iterator();
+        while (iter.hasNext()) {
+            add(iter.next());
+        }
+    }
+
+    /**
      * 从尾部插入指定元素，并返回 true
      * @param val   添加的新值
      * @return      如果运行正常，恒定为 true；负责会抛出异常
@@ -97,7 +108,7 @@ public class MyArrayList<AnyType> implements Iterable<AnyType> {
     }
 
     /**
-     * 在指定的下标处添加元素，但是注意这里的下标要用户自己保证其有效性和正确性
+     * 在指定的下标处添加元素，但是注意这里的下标要用户自己保证其有效性和正确性（回答练习 3.9）
      * @param index 下标
      * @param val   添加的值
      */
