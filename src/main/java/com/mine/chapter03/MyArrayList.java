@@ -1,6 +1,7 @@
 package com.mine.chapter03;
 
 import java.util.Iterator;
+import java.util.ListIterator;
 import java.util.NoSuchElementException;
 
 /**
@@ -146,6 +147,10 @@ public class MyArrayList<AnyType> implements Iterable<AnyType> {
         return new ArrayListIterator();
     }
 
+    public ListIterator<AnyType> listIterator() {
+        return new MyArrayListIterator();
+    }
+
     private class ArrayListIterator implements Iterator<AnyType> {
         private int current = 0; // 指向当前的元素的下标
 
@@ -165,6 +170,72 @@ public class MyArrayList<AnyType> implements Iterable<AnyType> {
         @Override
         public void remove() {
             MyArrayList.this.remove(--current);
+        }
+    }
+
+    // 回答练习 3.13
+    private class MyArrayListIterator implements ListIterator<AnyType> {
+
+        private int current = 0; // 指向当前元素的下标
+        private boolean backwards = false; // 如果是调用 next 迭代，则返回 false；否则返回 true
+
+        @Override
+        public boolean hasNext() {
+            return current < size();
+        }
+
+        @Override
+        public AnyType next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            backwards = false;
+            return theItems[current++];
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return current > 0;
+        }
+
+        @Override
+        public AnyType previous() {
+            if (!hasPrevious()) {
+                throw new NoSuchElementException();
+            }
+            backwards = true;
+            return theItems[--current];
+        }
+
+        @Override
+        public int nextIndex() {
+            // 注：原来接口注释定义，如果迭代器位于最后一个位置，将返回列表大小
+            return current;
+        }
+
+        @Override
+        public int previousIndex() {
+            // 注：原来接口注释定义，如果迭代器位于开头，则返回 -1
+            return current - 1;
+        }
+
+        @Override
+        public void remove() {
+            if (backwards) {
+                MyArrayList.this.remove(current);
+            } else {
+                MyArrayList.this.remove(--current);
+            }
+        }
+
+        @Override
+        public void set(AnyType anyType) {
+            theItems[current - 1] = anyType;
+        }
+
+        @Override
+        public void add(AnyType anyType) {
+            MyArrayList.this.add(current++, anyType);
         }
     }
 

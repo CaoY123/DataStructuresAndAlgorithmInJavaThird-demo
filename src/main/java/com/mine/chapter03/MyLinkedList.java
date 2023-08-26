@@ -219,6 +219,10 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
         return new LinkedListIterator();
     }
 
+    public ListIterator<AnyType> listIterator() {
+        return new MyLinkedListIterator();
+    }
+
     private class LinkedListIterator implements Iterator<AnyType> {
 
         private Node<AnyType> current = beginMarker.next;
@@ -259,6 +263,116 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
             MyLinkedList.this.remove(current.prev);
             expectedModCount++;
             okToRemove = false;
+        }
+    }
+
+    // 回答练习 3.14 （搞得有点乱，如有错误，恳请指正）
+    private class MyLinkedListIterator implements ListIterator<AnyType> {
+
+        private Node<AnyType> current = beginMarker.next;
+        private int expectedModCount = modCount;
+        private boolean okToRemove = false; // 按照迭代器的使用规范，只有 next() 后才能 remove()，这个变量就是为了保证这个规则而存在的
+        private boolean backwards = false;
+
+        @Override
+        public boolean hasNext() {
+            return current != endMarker;
+        }
+
+        @Override
+        public AnyType next() {
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+            if (!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            AnyType res = current.data;
+            okToRemove = true;
+            current = current.next;
+            backwards = false;
+            return res;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            return current.prev != beginMarker;
+        }
+
+        @Override
+        public AnyType previous() {
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+            if (!hasPrevious()) {
+                throw new NoSuchElementException();
+            }
+            current = current.prev;
+            AnyType res = current.data;
+            okToRemove = true;
+            backwards = true;
+            return res;
+        }
+
+        @Override
+        public int nextIndex() {
+            // 不要求实现，抛异常了
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int previousIndex() {
+            // 不要求实现，抛异常了
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void remove() {
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+            if (!okToRemove) {
+                throw new IllegalStateException();
+            }
+
+            MyLinkedList.this.remove(current.prev);
+            expectedModCount++;
+        }
+
+        @Override
+        public void set(AnyType anyType) {
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+
+            if (backwards) {
+                current.data = anyType;
+            } else {
+                current.prev.data = anyType;
+            }
+            modCount++;
+            expectedModCount++;
+        }
+
+        /**
+         * add 具有方向性，如果 next 迭代，它会插在刚经过的元素的后面；如果使用 previous 迭代
+         * 它会插在 刚经过元素的前面
+         * @param anyType   待插入的值
+         */
+        @Override
+        public void add(AnyType anyType) {
+            if (modCount != expectedModCount) {
+                throw new ConcurrentModificationException();
+            }
+
+            expectedModCount++;
+            if (backwards) {
+                MyLinkedList.this.addBefore(current, anyType);
+            } else {
+                Node<AnyType> p = current;
+                MyLinkedList.this.addBefore(p, anyType);
+                current = current.prev;
+            }
         }
     }
 
