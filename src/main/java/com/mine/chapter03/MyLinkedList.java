@@ -215,6 +215,64 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
     }
 
     /**
+     * 在第一个位置添加元素
+     * @param x 待添加的元素
+     * @return  在不抛出异常的情况下返回 true
+     */
+    public boolean addFirst(AnyType x) {
+        addBefore(beginMarker.next, x);
+        return true;
+    }
+
+    /**
+     * 在最后一个位置添加元素
+     * @param x 待添加的元素
+     * @return  在不抛出异常的情况下返回 true
+     */
+    public boolean addLast(AnyType x) {
+        addBefore(endMarker, x);
+        return true;
+    }
+
+    /**
+     * 删除第一个位置的元素，并返回刚删除的元素
+     * @return  刚删除的第一个位置的元素
+     */
+    public AnyType removeFirst() {
+        return remove(beginMarker.next);
+    }
+
+    /**
+     * 删除最后一个位置的元素
+     * @return  刚删除的最后一个位置的元素
+     */
+    public AnyType removeLast() {
+        return remove(endMarker.prev);
+    }
+
+    /**
+     * 获得第一个位置的元素
+     * @return  第一个位置的元素
+     */
+    public AnyType getFirst() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        return beginMarker.next.data;
+    }
+
+    /**
+     * 获得最后一个位置的元素
+     * @return  最后一个位置的元素
+     */
+    public AnyType getLast() {
+        if (isEmpty()) {
+            throw new NoSuchElementException();
+        }
+        return endMarker.prev.data;
+    }
+
+    /**
      * 将所有的向从 list 中删除（使 list 为空），把它们放到 MyLinkedList this 的 iter 之前，
      * 而且 list 和 this 必须是不同的表。（回答练习 3.15）
      * @param iter
