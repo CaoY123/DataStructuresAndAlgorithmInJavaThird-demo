@@ -5,3 +5,7 @@
 ![](../../../../../../../practices/03/practice03_04.jpg)
 ![](../../../../../../../practices/03/practice03_05.jpg)
 ![](../../../../../../../practices/03/practice03_06.jpg)
+![](../../../../../../../practices/03/practice03_07.jpg)
+![](../../../../../../../practices/03/practice03_08.jpg)
+![](../../../../../../../practices/03/practice03_09.jpg)
+![](../../../../../../../practices/03/practice03_10.jpg)

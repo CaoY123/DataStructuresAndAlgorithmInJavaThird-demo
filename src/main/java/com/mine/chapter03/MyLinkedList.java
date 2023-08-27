@@ -214,6 +214,31 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
         return false;
     }
 
+    /**
+     * 将所有的向从 list 中删除（使 list 为空），把它们放到 MyLinkedList this 的 iter 之前，
+     * 而且 list 和 this 必须是不同的表。（回答练习 3.15）
+     * @param iter
+     * @param list
+     */
+    public void splice(Iterator<AnyType> iter, MyLinkedList<? extends AnyType> list) {
+        Iterator<? extends AnyType> delIter = list.iterator();
+
+        LinkedListIterator iter1 = (LinkedListIterator) iter;
+
+        while (delIter.hasNext()) {
+            AnyType delVal = delIter.next();
+            delIter.remove();
+            addBefore(iter1.getCurrentNode(), delVal);
+        }
+    }
+
+    public void show() {
+        Iterator iter = iterator();
+        while (iter.hasNext()) {
+            System.out.print(iter.next() + " ");
+        }
+    }
+
     @Override
     public Iterator<AnyType> iterator() {
         return new LinkedListIterator();
@@ -263,6 +288,11 @@ public class MyLinkedList<AnyType> implements Iterable<AnyType> {
             MyLinkedList.this.remove(current.prev);
             expectedModCount++;
             okToRemove = false;
+        }
+
+        // 获取当前的结点，不是 public 的，只是为了辅助一些题目的实现
+        Node<AnyType> getCurrentNode() {
+            return current;
         }
     }
 
