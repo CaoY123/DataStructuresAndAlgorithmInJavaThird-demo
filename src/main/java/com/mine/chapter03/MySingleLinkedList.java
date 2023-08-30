@@ -70,6 +70,34 @@ public class MySingleLinkedList<AnyType> implements Iterable<AnyType>{
         return false;
     }
 
+    /**
+     * 将链表转换为逆置链表（回答练习 3.29，参考答案得到）
+     * 该逆置算法时间复杂度为 O(N)，使用了常数的空间
+     */
+    public void reverseList() {
+        if (size() == 0) {
+            throw new IllegalStateException();
+        }
+
+        if (size() == 1) {
+            return;
+        }
+
+        Node<AnyType> preNode = head;
+        Node<AnyType> curNode = head.next;
+        Node<AnyType> nextNode = curNode;
+
+        while (curNode != null) {
+            nextNode = nextNode.next;
+            curNode.next = preNode;
+            preNode = curNode;
+            curNode = nextNode;
+        }
+
+        head.next.next = null;
+        head.next = preNode;
+    }
+
     @Override
     public Iterator<AnyType> iterator() {
         return new SingleListIterator<>();
