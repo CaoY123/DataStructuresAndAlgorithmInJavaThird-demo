@@ -5,7 +5,7 @@ import java.util.NoSuchElementException;
 /**
  * @author CaoY
  * @date 2023-08-23 19:00
- * @description 使用循环数组实现自定义队列（参考自书 P65 - P66）
+ * @description 使用循环数组实现自定义队列（参考自书 P65 - P66）（回答练习 3.33）
  *
  * 注：使用的数组需要预留一个位置存放供 back 指向，因为 back 指向最后一个元素的下一个位置。
  * 所以当队列为空时，front 和 back 指向同一个位置，所以每次出队操作时最好应该检测一下队列是否
@@ -53,7 +53,7 @@ public class MyArrayListQueue<AnyType> implements MyQueue<AnyType> {
     @Override
     public int size() {
         // 通过队头和队尾后一个元素的下标动态计算队列中的元素个数
-        return front <= back ? back - front : theArray.length - front + back + 1;
+        return front <= back ? back - front : theArray.length - front + back;
     }
 
     @Override
@@ -82,8 +82,9 @@ public class MyArrayListQueue<AnyType> implements MyQueue<AnyType> {
 
         AnyType[] old = theArray;
         theArray = (AnyType[]) (new Object[newCapacity]); // 这里注意含泛型的数组分配空间时的写法，不能直接 new AnyType[]
-        for (int i = front; i != back; i = (i + 1) % theArray.length) {
-            theArray[i] = old[i];
+        int k = 0;
+        for (int i = front; i != back; i = (i + 1) % old.length) {
+            theArray[k++] = old[i];
         }
     }
 
@@ -109,7 +110,7 @@ public class MyArrayListQueue<AnyType> implements MyQueue<AnyType> {
         queue.enQueue(235);
         queue.enQueue(334);
         queue.enQueue(576);
-        System.out.println("请空前，元素个数：" + queue.size());
+        System.out.println("清空前，元素个数：" + queue.size());
         queue.clear();
         System.out.println("清空后，队列是否为空：" + (queue.isEmpty() ? "是" : "否"));
 
