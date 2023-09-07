@@ -83,13 +83,57 @@ public class BinarySearchTree<AnyType extends Comparable<? super AnyType> > {
     }
 
     /**
+     * 输出指定描述并按前序遍历打印树中的元素
+     * @param description   对于打印树的描述
+     */
+    public void preorderShow(String description) {
+        System.out.print(description);
+        if (isEmpty()) {
+            System.out.print("这是一个空的查找二叉树");
+        } else {
+            preorderShow(root);
+        }
+        System.out.println();
+    }
+
+    /**
      * 输出指定描述并按中序遍历打印树中的元素
      * @param description   指定描述
      */
     public void inorderShow(String description) {
         System.out.print(description);
-        inorderShow(root);
+        if (isEmpty()) {
+            System.out.print("这是一个空的查找二叉树");
+        } else {
+            inorderShow(root);
+        }
         System.out.println();
+    }
+
+    /**
+     * 输出指定描述并按后序遍历打印树中的元素
+     * @param description   指定描述
+     */
+    public void postorderShow(String description) {
+        System.out.print(description);
+        if (isEmpty()) {
+            System.out.print("这是一个空的查找二叉树");
+        } else {
+            postorderShow(root);
+        }
+        System.out.println();
+    }
+
+    /**
+     * 根据指定描述依次采用三种遍历方式打印二叉查找树
+     * @param description   指定描述
+     */
+    public void allOrderShow(String description) {
+        System.out.println(description);
+        preorderShow("前序遍历打印：");
+        inorderShow("中序遍历打印：");
+        postorderShow("后序遍历打印：");
+        System.out.println("***************************************");
     }
 
     private int myCompare(AnyType a, AnyType b) {
@@ -165,7 +209,7 @@ public class BinarySearchTree<AnyType extends Comparable<? super AnyType> > {
             t.right = remove(x, t.right);
         } else if (t.left != null && t.right != null) {
             // 这里设计的太巧妙了，值得反复品鉴
-            t.element = findMin(t).element;
+            t.element = findMin(t.right).element;
             t.right = remove(t.element, t.right);
         } else {
             t = (t.left != null) ? t.left : t.right;
@@ -190,6 +234,25 @@ public class BinarySearchTree<AnyType extends Comparable<? super AnyType> > {
         inorderShow(t.left);
         System.out.print(t.element + " ");
         inorderShow(t.right);
+    }
+
+    private void preorderShow(BinaryNode<AnyType> t) {
+        if (t == null) {
+            return;
+        }
+        System.out.print(t.element + " ");
+        preorderShow(t.left);
+        preorderShow(t.right);
+    }
+
+    private void postorderShow(BinaryNode<AnyType> t) {
+        if (t == null) {
+            return;
+        }
+
+        postorderShow(t.left);
+        postorderShow(t.right);
+        System.out.print(t.element + " ");
     }
 
     private static class BinaryNode<AnyType> {
