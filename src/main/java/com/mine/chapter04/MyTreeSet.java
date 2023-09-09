@@ -1,9 +1,6 @@
 package com.mine.chapter04;
 
-import java.util.Comparator;
-import java.util.ConcurrentModificationException;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 /**
  * @author CaoY
@@ -13,15 +10,17 @@ import java.util.NoSuchElementException;
  * 回答练习 4.11 TreeSet 的二叉查找树版本的实现
  */
 public class MyTreeSet<AnyType extends Comparable<? super AnyType> >
-        implements Iterable<AnyType>{
+        implements Iterable<AnyType> {
 
     private BinaryNode<AnyType> root;
     private int modCount; // 修改次数
     private Comparator<? super AnyType> cmp; // 自定义的比较器
+    private int size;
 
     public MyTreeSet() {
         root = null;
         modCount = 0;
+        size = 0;
     }
 
     public MyTreeSet(Comparator<? super AnyType> cmp) {
@@ -35,6 +34,16 @@ public class MyTreeSet<AnyType extends Comparable<? super AnyType> >
     public void makeEmpty() {
         root = null;
         modCount++;
+        size = 0;
+    }
+
+    /**
+     * 得到 TreeSet 中的元素个数
+     * @return  TreeSet 中的元素个数
+     * 为解决练习 4.11
+     */
+    public int size() {
+        return this.size;
     }
 
     /**
@@ -158,6 +167,21 @@ public class MyTreeSet<AnyType extends Comparable<? super AnyType> >
         System.out.println("***************************************");
     }
 
+    /**
+     * 根据指定值获取相应结点
+     * @param x 指定直
+     * @return  返回的结点的一个拷贝
+     * 为了完成练习 4.12 添加的工具方法，并不建议调用
+     */
+     BinaryNode<AnyType> getNode(AnyType x) {
+        if (x == null) {
+            return null;
+        }
+
+        BinaryNode<AnyType> node = getNode(x, root);
+        return node == null ? node : new BinaryNode<>(node.element);
+     }
+
     // 这里的 a、b 若为 null 值对于一棵可以排序的树来说也没有实际意义，因此不考虑 null 的情况。
     private int myCompare(AnyType a, AnyType b) {
         if (cmp != null) {
@@ -198,6 +222,7 @@ public class MyTreeSet<AnyType extends Comparable<? super AnyType> >
                                        BinaryNode<AnyType> pt) {
         if (t == null) {
             modCount++;
+            size++;
             t = new BinaryNode<>(x, null, null, pt);
             return t;
         }
@@ -229,6 +254,7 @@ public class MyTreeSet<AnyType extends Comparable<? super AnyType> >
             t.right = remove(t.element, t.right);
         } else {
             modCount++;
+            size--;
             BinaryNode<AnyType> oneChild = (t.left != null) ? t.left : t.right;
             if (oneChild != null) {
                 oneChild.parent = t.parent;
@@ -238,6 +264,21 @@ public class MyTreeSet<AnyType extends Comparable<? super AnyType> >
         }
 
         return t;
+    }
+
+    private BinaryNode<AnyType> getNode(AnyType x, BinaryNode<AnyType> t) {
+        if (t == null) {
+            return null;
+        }
+
+        int compareRes = myCompare(x, t.element);
+        if (compareRes < 0) {
+            return getNode(x, t.left);
+        } else if (compareRes > 0) {
+            return getNode(x, t.right);
+        } else {
+            return t;
+        }
     }
 
     @Override
@@ -358,7 +399,10 @@ public class MyTreeSet<AnyType extends Comparable<? super AnyType> >
         System.out.print(t.element + " ");
     }
 
-    private class BinaryNode<AnyType> {
+    // 此处为适应练习 4.12，将该结点类的可见度调高了，实际上应该是 private，
+    // 但是笔者设计水平有限，请各位理解，要注意各位不要乱暴露类，也不要在同一个
+    // 包下随意使用这个类！
+    class BinaryNode<AnyType> {
         public AnyType element;
         public BinaryNode<AnyType> left;
         public BinaryNode<AnyType> right;
